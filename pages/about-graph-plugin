@@ -1,37 +1,83 @@
 {
   "title": "About Graph Plugin",
   "story": [
-  {
-    "type": "paragraph",
-    "id": "f2231f0835f360d5",
-    "text": "Here we describe the purpose of the plugin and include a sample."
-  },
-  {
-    "type": "graph",
-    "id": "6982a2be8a97b9be",
-    "text": "This is text in the new plugin. You can *double-click* to edit it too."
-  }
-],
-  "journal": [
-  {
-    "type": "create",
-    "item": {
-      "title": "About Graph Plugin",
-      "story": [
-  {
-    "type": "paragraph",
-    "id": "f2231f0835f360d5",
-    "text": "Here we describe the purpose of the plugin and include a sample."
-  },
-  {
-    "type": "graph",
-    "id": "6982a2be8a97b9be",
-    "text": "This is text in the new plugin. You can *double-click* to edit it too."
-  }
-]
+    {
+      "type": "paragraph",
+      "id": "f2231f0835f360d5",
+      "text": "The markup describes a list of nodes connected by arcs. Arcs are marked up as --> or <-- depending on their direction."
     },
-    "date": 1461426544000,
-    "certificate": "from mkplugin.sh"
-  }
-]
+    {
+      "type": "paragraph",
+      "id": "2ea160c2dc7a54ce",
+      "text": "Here is a graph of page titles that includes this page. This would be good for pattern languages that want to identify preceding and following patterns."
+    },
+    {
+      "type": "graph",
+      "id": "6982a2be8a97b9be",
+      "text": "Welcome Visitors\n--> Testing Graph Plugin\n--> About Graph Plugin\n\nHello <-- World"
+    }
+  ],
+  "journal": [
+    {
+      "type": "create",
+      "item": {
+        "title": "About Graph Plugin",
+        "story": [
+          {
+            "type": "paragraph",
+            "id": "f2231f0835f360d5",
+            "text": "Here we describe the purpose of the plugin and include a sample."
+          },
+          {
+            "type": "graph",
+            "id": "6982a2be8a97b9be",
+            "text": "This is text in the new plugin. You can *double-click* to edit it too."
+          }
+        ]
+      },
+      "date": 1461426544000,
+      "certificate": "from mkplugin.sh"
+    },
+    {
+      "type": "edit",
+      "id": "6982a2be8a97b9be",
+      "item": {
+        "type": "graph",
+        "id": "6982a2be8a97b9be",
+        "text": "Welcome Visitors\n--> Testing Graph Plugin\n--> About Graph Plugin\n\nHello <-- World"
+      },
+      "date": 1461431989892
+    },
+    {
+      "type": "add",
+      "item": {
+        "type": "paragraph",
+        "id": "2ea160c2dc7a54ce",
+        "text": "Here is a graph of page titles that includes this page. This would be good for pattern languages that want to identify preceding and following patterns."
+      },
+      "after": "f2231f0835f360d5",
+      "id": "2ea160c2dc7a54ce",
+      "date": 1461432003145
+    },
+    {
+      "type": "edit",
+      "id": "f2231f0835f360d5",
+      "item": {
+        "type": "paragraph",
+        "id": "f2231f0835f360d5",
+        "text": "The markup describes a list of nodes connected by arcs."
+      },
+      "date": 1461432040922
+    },
+    {
+      "type": "edit",
+      "id": "f2231f0835f360d5",
+      "item": {
+        "type": "paragraph",
+        "id": "f2231f0835f360d5",
+        "text": "The markup describes a list of nodes connected by arcs. Arcs are marked up as --> or <-- depending on their direction."
+      },
+      "date": 1461432063078
+    }
+  ]
 }
