@@ -1,0 +1,37 @@
+{
+  "title": "About Graph Plugin",
+  "story": [
+  {
+    "type": "paragraph",
+    "id": "f2231f0835f360d5",
+    "text": "Here we describe the purpose of the plugin and include a sample."
+  },
+  {
+    "type": "graph",
+    "id": "6982a2be8a97b9be",
+    "text": "This is text in the new plugin. You can *double-click* to edit it too."
+  }
+],
+  "journal": [
+  {
+    "type": "create",
+    "item": {
+      "title": "About Graph Plugin",
+      "story": [
+  {
+    "type": "paragraph",
+    "id": "f2231f0835f360d5",
+    "text": "Here we describe the purpose of the plugin and include a sample."
+  },
+  {
+    "type": "graph",
+    "id": "6982a2be8a97b9be",
+    "text": "This is text in the new plugin. You can *double-click* to edit it too."
+  }
+]
+    },
+    "date": 1461426544000,
+    "certificate": "from mkplugin.sh"
+  }
+]
+}
