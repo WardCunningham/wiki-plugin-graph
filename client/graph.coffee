@@ -17,42 +17,91 @@ parse = (text) ->
       console.log 'token', token, 'from', from
       if token == ''
         from = last
-      else if token == '-->'
-        direction = 'forward'
-      else if token == '<--'
-        direction = 'reverse'
+      else if token == '-->' or token == '<--'
+        direction = token
       else
         if from?
-          if direction == 'forward'
+          if direction == '-->'
             graph[from] = [token]
           else
             graph[token] = from
         from = last = token
   graph
 
-render = ($item, graph) ->
-  # $item.append """
-  #   <div style="background-color: #eee; padding: 15px">
-  #     <pre>#{JSON.stringify graph, null, '    '}</pre>
-  #   </div>
-  # """
-  svg = """
-<svg width="5cm" height="3cm" viewBox="0 0 5 3" version="1.1"
-     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <desc>Example link01 - a link on an ellipse
-  </desc>
-  <rect x=".01" y=".01" width="4.98" height="2.98" 
-        fill="none" stroke="blue"  stroke-width=".03"/>
-  <a xlink:href="http://www.w3.org">
-    <ellipse cx="2.5" cy="1.5" rx="2" ry="1"
-             fill="red" />
-  </a>
-</svg>
+place = (graph) ->
+  placed = {}
+  x = 100
+  y = 100
+  for name, children of graph
+    console.log name
+    if not node = placed[name]
+      placed[name] = node = {name, x, y}
+      x += 100
+    for child in children
+      if not more = placed[name]
+        placed[child] = more = {name:child, x, y:child.y+50}
+  nodes = (node for name, node of placed)
+  # nodes = [{x:100, y:100}, {x:200, y:100}]
+  edges = [{f:0, t:1}]
+  {nodes, edges, graph}
+
+render = ($item, {nodes, edges, graph}) ->
+  $item.append """
+    <div style="background-color: #eee; padding: 15px">
+      <pre>#{JSON.stringify graph, null, '    '}</pre>
+    </div>
   """
-  $item.append svg
+
+  markup = []
+
+  svg = (params, more) ->
+    markup.push """<svg width="420px" height="320px" viewBox="0 0 420 320" version="1.1" xmlns="http://www.w3.org/2000/markup" xmlns:xlink="http://www.w3.org/1999/xlink">"""
+    more()
+    markup.push '</svg>'
+
+  link = (params, more) ->
+    markup.push """<a xlink:#{attr params}>"""
+    more()
+    markup.push '</a>'
+
+  ellipse = (params, more) ->
+    markup.push """<ellipse #{attr params} fill="#8e8" stroke="#999" stroke-width=".5">"""
+    more()
+    markup.push '</ellipse>'
+
+  rect = (params, more) ->
+    markup.push "<rect #{attr params}>"
+    more()
+    markup.push '</rect>'
+
+  text = (params, text) ->
+    markup.push "<text #{attr params} text-anchor=\"middle\">"
+    markup.push text.split(/ /)[0]
+    markup.push '</text>'
+
+  title = (text) ->
+    markup.push "<title>#{text}</title>"
+
+  jiggle = -> 
+    (Math.random()-Math.random())*10
+
+  attr = (params) ->
+    ("#{k}=\"#{v}\"" for k, v of params).join " "
+
+  svg {}, ->
+    rect {x: 0, y:0, width:420, height:320, fill:'#eee'}, ->
+    for node in nodes
+      x = node.x + jiggle()
+      y = node.y + jiggle()
+      link {href: 'http://c2.com'}, ->
+        ellipse {cx:x, cy:y, rx:20, ry:20}, ->
+          title node.name
+        text {x,y}, node.name
+
+  $item.append markup.join "\n"
 
 emit = ($item, item) ->
-  render $item, parse item.text
+  render $item, place parse item.text
 
 bind = ($item, item) ->
   # $item.dblclick -> wiki.textEditor $item, item
