@@ -86,7 +86,8 @@ render = ({graph, placed}) ->
         line {x1, y1, x2, y2}
 
     for node, [x, y] of placed
-      link {'xlink:href': '/#', 'data-node':escape(node)}, ->
+      href = "http:/#{wiki.asSlug node}.html"
+      link {'xlink:href':href, 'data-node':escape(node)}, ->
         fill = if node.toLowerCase() == here.toLowerCase() then '#ee8' else '#8e8'
         ellipse {cx:x, cy:y, rx:30, ry:20, fill}, ->
           title escape node
