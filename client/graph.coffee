@@ -53,7 +53,7 @@ render = ({graph, placed}) ->
     elem 'svg', params, {width:'420px', height:'320px'}, more
 
   link = (params, more) ->
-    markup.push """<a #{attr params}>"""; more(); markup.push '</a>'
+    elem 'a', params, {}, more
 
   ellipse = (params, more) ->
     elem 'ellipse', params, {stroke:'#999', 'stroke-width':1}, more
