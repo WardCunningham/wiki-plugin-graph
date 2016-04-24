@@ -55,7 +55,7 @@ render = ({graph, placed}) ->
     markup.push """<a #{attr params}>"""; more(); markup.push '</a>'
 
   ellipse = (params, more) ->
-    elem 'ellipse', params, {fill:'#8e8', stroke:'#999', 'stroke-width':.5}, more
+    elem 'ellipse', params, {stroke:'#999', 'stroke-width':.5}, more
 
   rect = (params, more) ->
     elem 'rect', params, {}, more
@@ -85,10 +85,10 @@ render = ({graph, placed}) ->
         line {x1, y1, x2, y2}
 
     for node, [x, y] of placed
-      link {'xlink:href': 'http://c2.com', 'data-node':node}, ->
-        ellipse {cx:x, cy:y, rx:20, ry:20}, ->
-          title node
-        text {x,y}, node
+      link {'xlink:href': 'http://c2.com', 'data-node':escape(node)}, ->
+        ellipse {cx:x, cy:y, rx:20, ry:20, fill:'#8e8'}, ->
+          title escape node
+        text {x,y}, escape node
 
   markup.join "\n"
 
