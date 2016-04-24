@@ -28,21 +28,23 @@ parse = (text) ->
   graph
 
 place = (graph) ->
+
+  jiggle = ->
+    Math.round((Math.random()-Math.random())*25)
+
   placed = {}
   x = 100
   y = 100
   for name, children of graph
     if not node = placed[name]
-      placed[name] = node = {name, x, y}
+      placed[name] = node = [x+jiggle(), y+jiggle()]
       x += 100
     for child in children
-      if not more = placed[name]
-        placed[child] = more = {name:child, x, y:child.y+50}
-  nodes = (node for name, node of placed)
-  edges = [{f:0, t:1}]
-  {nodes, edges, graph}
+      if not more = placed[child]
+        placed[child] = more = [x-50+jiggle(), node[1]+75+jiggle()]
+  {graph, placed}
 
-render = ({nodes, edges, graph}) ->
+render = ({graph, placed}) ->
 
   markup = []
 
@@ -58,6 +60,9 @@ render = ({nodes, edges, graph}) ->
   rect = (params, more) ->
     elem 'rect', params, {}, more
 
+  line = (params) ->
+    elem 'line', params, {'stroke-width':6, stroke:'#ccc'}, ->
+
   text = (params, text) ->
     elem 'text', params, {'text-anchor':'middle'}, ->
       markup.push text.split(/ /)[0]
@@ -68,27 +73,28 @@ render = ({nodes, edges, graph}) ->
   title = (text) ->
     markup.push "<title>#{text}</title>"
 
-  jiggle = -> 
-    (Math.random()-Math.random())*10
-
   attr = (params) ->
     ("#{k}=\"#{v}\"" for k, v of params).join " "
 
   svg {'viewBox':'0 0 420 320'}, ->
     rect {x: 0, y:0, width:420, height:320, fill:'#eee'}, ->
-    for node in nodes
-      x = node.x + jiggle()
-      y = node.y + jiggle()
+
+    for node, [x1, y1] of placed
+      for child in graph[node]||[]
+        [x2, y2] = placed[child] 
+        line {x1, y1, x2, y2}
+
+    for node, [x, y] of placed
       link {'xlink:href': 'http://c2.com'}, ->
         ellipse {cx:x, cy:y, rx:20, ry:20}, ->
-          title node.name
-        text {x,y}, node.name
+          title node
+        text {x,y}, node
 
   markup.join "\n"
 
 emit = ($item, item) ->
+  # $item.append "<pre>#{JSON.stringify place(parse(item.text)), null, '    '}</pre>"
   $item.append render place parse item.text
-  $item.append "<pre>#{JSON.stringify place(parse(item.text)), null, '    '}</pre>"
 
 bind = ($item, item) ->
   $item.dblclick -> wiki.textEditor $item, item
