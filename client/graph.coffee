@@ -2,6 +2,7 @@
 here = null
 
 escape = (text)->
+  return null unless text
   text
     .replace /&/g, '&amp;'
     .replace /</g, '&lt;'
@@ -87,18 +88,29 @@ render = ({graph, placed}) ->
 
     for node, [x, y] of placed
       href = "http:/#{wiki.asSlug node}.html"
-      link {'xlink:href':href, 'data-node':escape(node)}, ->
-        fill = if node.toLowerCase() == here.toLowerCase() then '#ee8' else '#8e8'
-        ellipse {cx:x, cy:y, rx:30, ry:20, fill}, ->
+      {color, synopsis} = neighbor node
+      link {'xlink:href':href, 'data-node':escape(node), 'data-synopsis':escape(synopsis)}, ->
+        ellipse {cx:x, cy:y, rx:30, ry:20, fill:color}, ->
           title escape node
         text {x,y}, escape node
 
   markup.join "\n"
 
+neighbor = (title) ->
+  wanted = wiki.asSlug title
+  return {color: '#ee8'} if title.toLowerCase() == here.toLowerCase()
+  for site, query of wiki.neighborhood
+    continue if query.sitemapRequestInflight
+    for {slug, synopsis} in query.sitemap
+      return {color: '#8ee', synopsis} if slug == wanted
+  return {color: '#8e8'}
+
+
 emit = ($item, item) ->
   here = $item.parents('.page').find('h1').text().trim()
   # $item.append "<pre>#{JSON.stringify place(parse(item.text)), null, '    '}</pre>"
   $item.append render place parse item.text
+  $item.append """<p class="caption"></p>"""
 
 bind = ($item, item) ->
   $item.dblclick -> wiki.textEditor $item, item
@@ -107,6 +119,9 @@ bind = ($item, item) ->
     node = $(e.target).parent('a').data('node')
     page = $item.parents '.page' unless e.shiftKey
     wiki.doInternalLink node, page
+  $item.find('a').on 'hover', (e) ->
+    console.log 'hover', html = $(e.target).parent('a').data('synopsis')
+    $item.find('.caption').html(html)
 
 window.plugins.graph = {emit, bind} if window?
 module.exports = {parse} if module?
