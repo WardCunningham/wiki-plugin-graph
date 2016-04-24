@@ -1,4 +1,6 @@
 
+here = null
+
 escape = (text)->
   text
     .replace /&/g, '&amp;'
@@ -33,8 +35,7 @@ place = (graph) ->
     Math.round((Math.random()-Math.random())*25)
 
   placed = {}
-  x = 100
-  y = 100
+  x = y = 100
   for name, children of graph
     if not node = placed[name]
       placed[name] = node = [x+jiggle(), y+jiggle()]
@@ -55,7 +56,7 @@ render = ({graph, placed}) ->
     markup.push """<a #{attr params}>"""; more(); markup.push '</a>'
 
   ellipse = (params, more) ->
-    elem 'ellipse', params, {stroke:'#999', 'stroke-width':.5}, more
+    elem 'ellipse', params, {stroke:'#999', 'stroke-width':1}, more
 
   rect = (params, more) ->
     elem 'rect', params, {}, more
@@ -64,7 +65,7 @@ render = ({graph, placed}) ->
     elem 'line', params, {'stroke-width':6, stroke:'#ccc'}, ->
 
   text = (params, text) ->
-    elem 'text', params, {'text-anchor':'middle'}, ->
+    elem 'text', params, {'text-anchor':'middle', dy:6}, ->
       markup.push text.split(/ /)[0]
 
   elem = (tag, params, extra, more) ->
@@ -85,14 +86,16 @@ render = ({graph, placed}) ->
         line {x1, y1, x2, y2}
 
     for node, [x, y] of placed
-      link {'xlink:href': 'http://c2.com', 'data-node':escape(node)}, ->
-        ellipse {cx:x, cy:y, rx:20, ry:20, fill:'#8e8'}, ->
+      link {'xlink:href': '/#', 'data-node':escape(node)}, ->
+        fill = if node.toLowerCase() == here.toLowerCase() then '#ee8' else '#8e8'
+        ellipse {cx:x, cy:y, rx:30, ry:20, fill}, ->
           title escape node
         text {x,y}, escape node
 
   markup.join "\n"
 
 emit = ($item, item) ->
+  here = $item.parents('.page').find('h1').text().trim()
   # $item.append "<pre>#{JSON.stringify place(parse(item.text)), null, '    '}</pre>"
   $item.append render place parse item.text
 
