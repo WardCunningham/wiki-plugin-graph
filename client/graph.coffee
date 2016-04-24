@@ -85,7 +85,7 @@ render = ({graph, placed}) ->
         line {x1, y1, x2, y2}
 
     for node, [x, y] of placed
-      link {'xlink:href': 'http://c2.com'}, ->
+      link {'xlink:href': 'http://c2.com', 'data-node':node}, ->
         ellipse {cx:x, cy:y, rx:20, ry:20}, ->
           title node
         text {x,y}, node
@@ -98,6 +98,11 @@ emit = ($item, item) ->
 
 bind = ($item, item) ->
   $item.dblclick -> wiki.textEditor $item, item
+  $item.find('a').click (e) ->
+    e.preventDefault()
+    node = $(e.target).parent('a').data('node')
+    page = $item.parents '.page' unless e.shiftKey
+    wiki.doInternalLink node, page
 
 window.plugins.graph = {emit, bind} if window?
 module.exports = {parse} if module?
