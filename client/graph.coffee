@@ -7,24 +7,23 @@ escape = (text)->
 
 parse = (text) ->
   graph = {}
-  last = from = null
+  children = (token) ->
+    graph[token] || graph[token] = []
+
+  last = from = direction = null
   for line in text.split(/\n/)
-    console.log line
-    tokens = line.split(/\s*(-->|<--)\s*/)
-    console.log 'tokens', tokens
+    tokens = line.trim().split(/\s*(-->|<--)\s*/)
     from = null
     for token in tokens
-      console.log 'token', token, 'from', from
       if token == ''
         from = last
       else if token == '-->' or token == '<--'
         direction = token
       else
         if from?
-          if direction == '-->'
-            graph[from] = [token]
-          else
-            graph[token] = from
+          switch direction
+            when '-->' then children(from).push token
+            when '<--' then children(token).push from
         from = last = token
   graph
 
@@ -33,7 +32,6 @@ place = (graph) ->
   x = 100
   y = 100
   for name, children of graph
-    console.log name
     if not node = placed[name]
       placed[name] = node = {name, x, y}
       x += 100
@@ -41,43 +39,31 @@ place = (graph) ->
       if not more = placed[name]
         placed[child] = more = {name:child, x, y:child.y+50}
   nodes = (node for name, node of placed)
-  # nodes = [{x:100, y:100}, {x:200, y:100}]
   edges = [{f:0, t:1}]
   {nodes, edges, graph}
 
-render = ($item, {nodes, edges, graph}) ->
-  $item.append """
-    <div style="background-color: #eee; padding: 15px">
-      <pre>#{JSON.stringify graph, null, '    '}</pre>
-    </div>
-  """
+render = ({nodes, edges, graph}) ->
 
   markup = []
 
   svg = (params, more) ->
-    markup.push """<svg width="420px" height="320px" viewBox="0 0 420 320" version="1.1" xmlns="http://www.w3.org/2000/markup" xmlns:xlink="http://www.w3.org/1999/xlink">"""
-    more()
-    markup.push '</svg>'
+    elem 'svg', params, {width:'420px', height:'320px'}, more
 
   link = (params, more) ->
-    markup.push """<a xlink:#{attr params}>"""
-    more()
-    markup.push '</a>'
+    markup.push """<a #{attr params}>"""; more(); markup.push '</a>'
 
   ellipse = (params, more) ->
-    markup.push """<ellipse #{attr params} fill="#8e8" stroke="#999" stroke-width=".5">"""
-    more()
-    markup.push '</ellipse>'
+    elem 'ellipse', params, {fill:'#8e8', stroke:'#999', 'stroke-width':.5}, more
 
   rect = (params, more) ->
-    markup.push "<rect #{attr params}>"
-    more()
-    markup.push '</rect>'
+    elem 'rect', params, {}, more
 
   text = (params, text) ->
-    markup.push "<text #{attr params} text-anchor=\"middle\">"
-    markup.push text.split(/ /)[0]
-    markup.push '</text>'
+    elem 'text', params, {'text-anchor':'middle'}, ->
+      markup.push text.split(/ /)[0]
+
+  elem = (tag, params, extra, more) ->
+    markup.push "<#{tag} #{attr params} #{attr extra}>"; more(); markup.push "</#{tag}>"
 
   title = (text) ->
     markup.push "<title>#{text}</title>"
@@ -88,23 +74,24 @@ render = ($item, {nodes, edges, graph}) ->
   attr = (params) ->
     ("#{k}=\"#{v}\"" for k, v of params).join " "
 
-  svg {}, ->
+  svg {'viewBox':'0 0 420 320'}, ->
     rect {x: 0, y:0, width:420, height:320, fill:'#eee'}, ->
     for node in nodes
       x = node.x + jiggle()
       y = node.y + jiggle()
-      link {href: 'http://c2.com'}, ->
+      link {'xlink:href': 'http://c2.com'}, ->
         ellipse {cx:x, cy:y, rx:20, ry:20}, ->
           title node.name
         text {x,y}, node.name
 
-  $item.append markup.join "\n"
+  markup.join "\n"
 
 emit = ($item, item) ->
-  render $item, place parse item.text
+  $item.append render place parse item.text
+  $item.append "<pre>#{JSON.stringify place(parse(item.text)), null, '    '}</pre>"
 
 bind = ($item, item) ->
-  # $item.dblclick -> wiki.textEditor $item, item
+  $item.dblclick -> wiki.textEditor $item, item
 
 window.plugins.graph = {emit, bind} if window?
 module.exports = {parse} if module?
