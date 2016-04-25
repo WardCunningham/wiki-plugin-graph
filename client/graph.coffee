@@ -100,7 +100,7 @@ neighbor = (title) ->
   wanted = wiki.asSlug title
   return {color: '#ee8'} if title.toLowerCase() == here.toLowerCase()
   for site, query of wiki.neighborhood
-    continue unless query?
+    continue unless query
     continue if query.sitemapRequestInflight
     for {slug, synopsis} in query.sitemap
       return {color: '#8ee', synopsis} if slug == wanted
