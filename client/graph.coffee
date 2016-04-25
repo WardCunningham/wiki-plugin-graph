@@ -112,6 +112,9 @@ emit = ($item, item) ->
   $item.append render place parse item.text
   $item.append """<p class="caption"></p>"""
 
+  $item.addClass 'graph-source'
+  $item.get(0).graphData = -> parse item.text
+
 bind = ($item, item) ->
   $item.dblclick -> wiki.textEditor $item, item
   $item.find('a').click (e) ->
