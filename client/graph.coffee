@@ -67,7 +67,7 @@ render = ({graph, placed}) ->
 
   text = (params, text) ->
     elem 'text', params, {'text-anchor':'middle', dy:6}, ->
-      markup.push text.split(/ /)[0]
+      markup.push text.split(' ')[0]
 
   elem = (tag, params, extra, more) ->
     markup.push "<#{tag} #{attr params} #{attr extra}>"; more(); markup.push "</#{tag}>"
@@ -100,6 +100,7 @@ neighbor = (title) ->
   wanted = wiki.asSlug title
   return {color: '#ee8'} if title.toLowerCase() == here.toLowerCase()
   for site, query of wiki.neighborhood
+    continue unless query?
     continue if query.sitemapRequestInflight
     for {slug, synopsis} in query.sitemap
       return {color: '#8ee', synopsis} if slug == wanted
