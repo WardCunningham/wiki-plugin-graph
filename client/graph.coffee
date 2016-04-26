@@ -23,6 +23,8 @@ parse = (text) ->
       else if token == '-->' or token == '<--'
         direction = token
       else
+        if token == 'HERE'
+          token = here
         if from?
           switch direction
             when '-->' then children(from).push token
