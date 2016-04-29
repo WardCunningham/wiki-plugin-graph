@@ -35,6 +35,9 @@ describe 'graph plugin', ->
     it 'can go backwards', ->
       eg "Earth <-- Moon", {Moon:['Earth'], Earth:[]}
 
+    it 'can go both ways', ->
+      eg "Earth <-> Moon", {Moon:['Earth'], Earth:['Moon']}
+
     it 'can chain forward', ->
       eg "Earth --> Moon --> Mars", {Earth:['Moon'], Moon:['Mars'], Mars:[]}
 

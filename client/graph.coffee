@@ -14,10 +14,10 @@ parse = (text) ->
   graph = {}
   left = op = right = null
   for line in text.split(/\n/)
-    tokens = line.trim().split(/\s*(-->|<--)\s*/)
+    tokens = line.trim().split(/\s*(-->|<--|<->)\s*/)
     for token in tokens
       if token == ''
-      else if token == '-->' or token == '<--'
+      else if token == '-->' or token == '<--' or token == '<->'
         op = token
       else
         right = if token == 'HERE' then here else token
@@ -26,6 +26,7 @@ parse = (text) ->
           switch op
             when '-->' then merge graph[left], right
             when '<--' then merge graph[right], left
+            when '<->' then merge graph[left], right; merge graph[right], left
         left = right
         op = right = null
   graph
