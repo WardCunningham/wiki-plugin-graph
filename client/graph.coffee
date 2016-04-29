@@ -109,7 +109,6 @@ neighbor = (title) ->
 
 emit = ($item, item) ->
   here = $item.parents('.page').find('h1').text().trim()
-  # $item.append "<pre>#{JSON.stringify place(parse(item.text)), null, '    '}</pre>"
   $item.append render place parse item.text
   $item.append """<p class="caption"></p>"""
 
