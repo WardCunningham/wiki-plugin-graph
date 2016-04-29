@@ -33,18 +33,30 @@ parse = (text) ->
 
 place = (graph) ->
 
-  jiggle = ->
-    Math.round((Math.random()-Math.random())*25)
+  copy = (loc) ->
+    [loc[0], loc[1]]
+
+  looping = (node) ->
+    for child in graph[node]
+      for grand in graph[child]
+        return true if node == grand and placed[child]?
+        for great in graph[grand]
+          return true if node == great and placed[grand]? and placed[child]?
+    false
 
   placed = {}
-  x = y = 100
+  origin = [50, 50]
   for name, children of graph
-    if not node = placed[name]
-      placed[name] = node = [x+jiggle(), y+jiggle()]
-      x += 100
+    if not placed[name]
+      placed[name] = copy origin
+      origin[0] += 100
+    node = copy placed[name]
+    node[1] += 75
     for child in children
-      if not more = placed[child]
-        placed[child] = more = [x-50+jiggle(), node[1]+75+jiggle()]
+      if not placed[child]
+        node[0] += 50 if looping(child)
+        placed[child] = copy node
+        node[0] += 75
   {graph, placed}
 
 render = ({graph, placed}) ->
