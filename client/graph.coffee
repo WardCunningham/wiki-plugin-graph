@@ -135,7 +135,6 @@ bind = ($item, item) ->
     page = $item.parents '.page' unless e.shiftKey
     wiki.doInternalLink node, page
   $item.find('a').on 'hover', (e) ->
-    console.log 'hover', html = $(e.target).parent('a').data('synopsis')
     $item.find('.caption').html(html)
 
 window.plugins.graph = {emit, bind} if window?
