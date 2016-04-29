@@ -9,27 +9,25 @@ escape = (text)->
     .replace />/g, '&gt;'
 
 parse = (text) ->
+  merge = (arcs, right) ->
+    arcs.push right if arcs.indexOf(right) == -1
   graph = {}
-  children = (token) ->
-    graph[token] || graph[token] = []
-
-  last = from = direction = null
+  left = op = right = null
   for line in text.split(/\n/)
     tokens = line.trim().split(/\s*(-->|<--)\s*/)
-    from = null
     for token in tokens
       if token == ''
-        from = last
       else if token == '-->' or token == '<--'
-        direction = token
+        op = token
       else
-        if token == 'HERE'
-          token = here
-        if from?
-          switch direction
-            when '-->' then children(from).push token
-            when '<--' then children(token).push from
-        from = last = token
+        right = if token == 'HERE' then here else token
+        graph[right] ||= []
+        if left? && op? && right?
+          switch op
+            when '-->' then merge graph[left], right
+            when '<--' then merge graph[right], left
+        left = right
+        op = right = null
   graph
 
 place = (graph) ->
