@@ -147,11 +147,10 @@ bind = ($item, item) ->
     slug = segs[n-1]
     wiki.pageHandler.get
       whenGotten: linkToPage
-      whenNotGotten: -> console.log 'page not found'
+      whenNotGotten: -> console.log "Graph drop: Can't parse '#{url}'"
       pageInformation: {site, slug}
 
   linkToPage = (pageObject) ->
-    console.log 'linkToPage', pageObject, pageObject.getTitle()
     item.text += "\nHERE --> #{pageObject.getTitle()}"
     $item.empty()
     emit($item, item)
