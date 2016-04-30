@@ -119,6 +119,7 @@ neighbor = (title) ->
   return {color: '#8e8'}
 
 emit = ($item, item) ->
+
   here = $item.parents('.page').find('h1').text().trim()
   $item.append render place parse item.text
   $item.append """<p class="caption"></p>"""
@@ -127,15 +128,19 @@ emit = ($item, item) ->
   $item.get(0).graphData = -> parse item.text
 
 bind = ($item, item) ->
+
   $item.dblclick -> wiki.textEditor $item, item
+
   $item.find('a').click (e) ->
     e.preventDefault()
     node = $(e.target).parent('a').data('node')
     page = $item.parents '.page' unless e.shiftKey
     wiki.doInternalLink node, page
+
   $item.find('a').on 'hover', (e) ->
     html = $(e.target).parent('a').data('synopsis')
     $item.find('.caption').html(html)
+
   $item.on 'drop', (e) ->
     e.preventDefault()
     e.stopPropagation()
