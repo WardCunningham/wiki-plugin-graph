@@ -148,22 +148,30 @@ bind = ($item, item) ->
     return unless url
     segs = url.split '/'
     return unless (n = segs.length) >= 5
-    site = if segs[n-2] == 'view' then segs[2] else segs[n-2]
-    slug = segs[n-1]
+    console.log 'segs', segs, segs.length
+    site = if segs[n-2] == 'view'
+      drop = (n-5)/2
+      lineup = $('.page').index($item.parents('.page'))
+      console.log {n, drop, lineup}
+      null
+    else
+      segs[n-2]
     wiki.pageHandler.get
-      whenGotten: linkToPage
+      pageInformation: {site, slug:segs[n-1]}
       whenNotGotten: -> console.log "Graph drop: Can't parse '#{url}'"
-      pageInformation: {site, slug}
+      whenGotten: (pageObject) ->
+        item.text += "\nHERE --> #{pageObject.getTitle()}"
+        update()
 
-  linkToPage = (pageObject) ->
-    item.text += "\nHERE --> #{pageObject.getTitle()}"
+  update = ->
     $item.empty()
     emit($item, item)
-    bind($item, item)
+    # bind($item, item)
     wiki.pageHandler.put $item.parents('.page:first'),
       type: 'edit',
       id: item.id,
       item: item
+
 
 
 window.plugins.graph = {emit, bind} if window?
