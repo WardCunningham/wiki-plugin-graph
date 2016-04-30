@@ -118,7 +118,6 @@ neighbor = (title) ->
       return {color: '#8ee', synopsis} if slug == wanted
   return {color: '#8e8'}
 
-
 emit = ($item, item) ->
   here = $item.parents('.page').find('h1').text().trim()
   $item.append render place parse item.text
@@ -137,6 +136,31 @@ bind = ($item, item) ->
   $item.find('a').on 'hover', (e) ->
     html = $(e.target).parent('a').data('synopsis')
     $item.find('.caption').html(html)
+  $item.on 'drop', (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    url = e.originalEvent.dataTransfer.getData("URL")
+    return unless url
+    segs = url.split '/'
+    return unless (n = segs.length) >= 5
+    site = if segs[n-2] == 'view' then segs[2] else segs[n-2]
+    slug = segs[n-1]
+    wiki.pageHandler.get
+      whenGotten: linkToPage
+      whenNotGotten: -> console.log 'page not found'
+      pageInformation: {site, slug}
+
+  linkToPage = (pageObject) ->
+    console.log 'linkToPage', pageObject, pageObject.getTitle()
+    item.text += "\nHERE --> #{pageObject.getTitle()}"
+    $item.empty()
+    emit($item, item)
+    bind($item, item)
+    wiki.pageHandler.put $item.parents('.page:first'),
+      type: 'edit',
+      id: item.id,
+      item: item
+
 
 window.plugins.graph = {emit, bind} if window?
 module.exports = {parse} if module?
