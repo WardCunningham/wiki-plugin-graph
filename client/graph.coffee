@@ -1,3 +1,4 @@
+bound = false
 
 escape = (text)->
   return null unless text
@@ -137,6 +138,16 @@ bind = ($item, item) ->
   here = $item.parents('.page').find('h1').text().trim()
 
   $item.dblclick -> wiki.textEditor $item, item
+
+  unless bound
+    bound = true
+    $('body').on 'new-neighbor-done', (e, neighbor) ->
+      $('.page').each (i, p) ->
+        $page = $(p)
+        here = $page.find('h1').text().trim()
+        $page.find('.item.graph').each (j, g) ->
+          $item = $(g)
+          colorcode here, $item
 
   $item.on 'drop', (e) ->
     e.preventDefault()
