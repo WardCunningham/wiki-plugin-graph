@@ -6,7 +6,7 @@ expect = require 'expect.js'
 
 describe 'graph plugin', ->
   eg = (input, output) ->
-    result = graph.parse input
+    result = graph.parse 'Earth', input
     expect(result).to.eql output
 
 
@@ -14,6 +14,9 @@ describe 'graph plugin', ->
 
     it 'can be one word', ->
       eg 'Earth', {Earth:[]}
+
+    it 'can be word HERE', ->
+      eg 'HERE', {Earth:[]}
 
     it 'can be many words', ->
       eg 'Earth and Moon', {'Earth and Moon':[]}
@@ -30,10 +33,10 @@ describe 'graph plugin', ->
   describe 'arcs', ->
 
     it 'can go forward', ->
-      eg "Earth --> Moon", {Earth:['Moon'], Moon:[]}
+      eg "HERE --> Moon", {Earth:['Moon'], Moon:[]}
 
     it 'can go backwards', ->
-      eg "Earth <-- Moon", {Moon:['Earth'], Earth:[]}
+      eg "HERE <-- Moon", {Moon:['Earth'], Earth:[]}
 
     it 'can go both ways', ->
       eg "Earth <-> Moon", {Moon:['Earth'], Earth:['Moon']}

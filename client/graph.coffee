@@ -1,6 +1,4 @@
 
-here = null
-
 escape = (text)->
   return null unless text
   text
@@ -8,7 +6,7 @@ escape = (text)->
     .replace /</g, '&lt;'
     .replace />/g, '&gt;'
 
-parse = (text) ->
+parse = (here, text) ->
   merge = (arcs, right) ->
     arcs.push right if arcs.indexOf(right) == -1
   graph = {}
@@ -111,7 +109,7 @@ render = ({graph, placed}) ->
 
 neighbor = (title) ->
   wanted = wiki.asSlug title
-  return {color: '#ee8'} if title.toLowerCase() == here.toLowerCase()
+  # return {color: '#ee8'} if title.toLowerCase() == here.toLowerCase()
   for site, query of wiki.neighborhood
     continue if query.sitemapRequestInflight or !query.sitemap
     for {slug, synopsis} in query.sitemap
@@ -121,11 +119,11 @@ neighbor = (title) ->
 emit = ($item, item) ->
 
   here = $item.parents('.page').find('h1').text().trim()
-  $item.append render place parse item.text
+  $item.append render place parse here, item.text
   $item.append """<p class="caption"></p>"""
 
   $item.addClass 'graph-source'
-  $item.get(0).graphData = -> parse item.text
+  $item.get(0).graphData = -> parse here, item.text
 
 bind = ($item, item) ->
 
