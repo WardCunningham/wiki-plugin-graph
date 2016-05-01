@@ -99,22 +99,29 @@ render = ({graph, placed}) ->
 
     for node, [x, y] of placed
       href = "http:/#{wiki.asSlug node}.html"
-      {color, synopsis} = neighbor node
-      link {'xlink:href':href, 'data-node':escape(node), 'data-synopsis':escape(synopsis)}, ->
-        ellipse {cx:x, cy:y, rx:30, ry:20, fill:color}, ->
+      link {'xlink:href':href, 'data-node':escape(node)}, ->
+        ellipse {cx:x, cy:y, rx:30, ry:20, fill:'#fff'}, ->
           title escape node
         text {x,y}, escape node
 
   markup.join "\n"
 
-neighbor = (title) ->
+neighbor = (here, title) ->
   wanted = wiki.asSlug title
-  # return {color: '#ee8'} if title.toLowerCase() == here.toLowerCase()
+  return {color: '#ee8'} if title.toLowerCase() == here.toLowerCase()
   for site, query of wiki.neighborhood
     continue if query.sitemapRequestInflight or !query.sitemap
     for {slug, synopsis} in query.sitemap
       return {color: '#8ee', synopsis} if slug == wanted
   return {color: '#8e8'}
+
+colorcode = (here, $item) ->
+  $item.find('a').each (i, a) ->
+    $a = $(a)
+    title = $a.data('node')
+    {color, synopsis} = neighbor here, title
+    $a.data('synopsis', synopsis) if synopsis
+    $a.find('ellipse').attr('fill', color)
 
 emit = ($item, item) ->
 
@@ -127,17 +134,9 @@ emit = ($item, item) ->
 
 bind = ($item, item) ->
 
+  here = $item.parents('.page').find('h1').text().trim()
+
   $item.dblclick -> wiki.textEditor $item, item
-
-  $item.find('a').click (e) ->
-    e.preventDefault()
-    node = $(e.target).parent('a').data('node')
-    page = $item.parents '.page' unless e.shiftKey
-    wiki.doInternalLink node, page
-
-  $item.find('a').on 'hover', (e) ->
-    html = $(e.target).parent('a').data('synopsis')
-    $item.find('.caption').html(html)
 
   $item.on 'drop', (e) ->
     e.preventDefault()
@@ -161,10 +160,26 @@ bind = ($item, item) ->
         item.text += "\nHERE --> #{pageObject.getTitle()}"
         update()
 
+  rebind = ->
+    colorcode here, $item
+
+    $item.find('a').click (e) ->
+      e.preventDefault()
+      node = $(e.target).parent('a').data('node')
+      page = $item.parents '.page' unless e.shiftKey
+      wiki.doInternalLink node, page
+
+    $item.find('a').on 'hover', (e) ->
+      html = $(e.target).parent('a').data('synopsis')
+      $item.find('.caption').html(html)
+
+  rebind()
+
+
   update = ->
     $item.empty()
     emit($item, item)
-    # bind($item, item)
+    rebind()
     wiki.pageHandler.put $item.parents('.page:first'),
       type: 'edit',
       id: item.id,
