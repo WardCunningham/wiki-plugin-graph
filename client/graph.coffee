@@ -156,19 +156,22 @@ bind = ($item, item) ->
     return unless url
     segs = url.split '/'
     return unless (n = segs.length) >= 5
-    console.log 'segs', segs, segs.length
-    site = if segs[n-2] == 'view'
-      drop = (n-5)/2
-      lineup = $('.page').index($item.parents('.page'))
-      console.log {n, drop, lineup}
-      null
-    else
-      segs[n-2]
+    site = if segs[n-2] == 'view' then segs[2] else segs[n-2]
+    slug = segs[n-1]
     wiki.pageHandler.get
-      pageInformation: {site, slug:segs[n-1]}
-      whenNotGotten: -> console.log "Graph drop: Can't parse '#{url}'"
+      pageInformation: {site, slug}
+      whenNotGotten: -> console.error "Graph drop: Can't parse '#{url}'"
       whenGotten: (pageObject) ->
-        item.text += "\nHERE --> #{pageObject.getTitle()}"
+        title = pageObject.getTitle()
+        item.text = if site != location.host
+          item.text + "\n#{title}"
+        else
+          h = $('.page').index($item.parents('.page'))
+          t = $('.page').index($(".page##{slug}"))
+          if t < h
+            "#{title} --> HERE\n" + item.text
+          else
+            item.text + "\nHERE --> #{title}"
         update()
 
   rebind = ->
