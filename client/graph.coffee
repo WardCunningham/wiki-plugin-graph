@@ -179,6 +179,7 @@ bind = ($item, item) ->
 
     $item.find('a').click (e) ->
       e.preventDefault()
+      e.stopPropagation()
       node = $(e.target).parent('a').data('node')
       page = $item.parents '.page' unless e.shiftKey
       wiki.doInternalLink node, page
