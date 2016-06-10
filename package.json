@@ -1,6 +1,6 @@
 {
   "name": "wiki-plugin-graph",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Federated Wiki - Graph Plugin",
   "keywords": [
     "graph",
