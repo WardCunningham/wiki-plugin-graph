@@ -59,7 +59,7 @@ place = (graph) ->
         node[0] += 50 if looping(child)
         placed[child] = copy node
         node[0] += 75
-  {graph, placed, height}
+  {graph, placed, height:height-20}
 
 render = ({graph, placed, height}) ->
   console.log {graph, placed, height}
