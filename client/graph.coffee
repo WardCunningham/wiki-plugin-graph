@@ -32,6 +32,8 @@ parse = (here, text) ->
 
 place = (graph) ->
 
+  height = 0
+
   copy = (loc) ->
     [loc[0], loc[1]]
 
@@ -51,19 +53,21 @@ place = (graph) ->
       origin[0] += 100
     node = copy placed[name]
     node[1] += 75
+    height = Math.max height, node[1]
     for child in children
       if not placed[child]
         node[0] += 50 if looping(child)
         placed[child] = copy node
         node[0] += 75
-  {graph, placed}
+  {graph, placed, height}
 
-render = ({graph, placed}) ->
+render = ({graph, placed, height}) ->
+  console.log {graph, placed, height}
 
   markup = []
 
   svg = (params, more) ->
-    elem 'svg', params, {width:'420px', height:'320px'}, more
+    elem 'svg', params, {width:'420px', height:"#{height}px"}, more
 
   link = (params, more) ->
     elem 'a', params, {}, more
@@ -90,8 +94,8 @@ render = ({graph, placed}) ->
   attr = (params) ->
     ("#{k}=\"#{v}\"" for k, v of params).join " "
 
-  svg {'viewBox':'0 0 420 320'}, ->
-    rect {x: 0, y:0, width:420, height:320, fill:'#eee'}, ->
+  svg {'viewBox':"0 0 420 #{height}"}, ->
+    rect {x: 0, y:0, width:420, height, fill:'#eee'}, ->
 
     for node, [x1, y1] of placed
       for child in graph[node]||[]
