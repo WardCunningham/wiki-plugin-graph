@@ -189,7 +189,9 @@ bind = ($item, item) ->
       wiki.doInternalLink node, page
 
     $item.find('a').on 'hover', (e) ->
-      html = $(e.target).parent('a').data('synopsis')
+      anchor = $(e.target).parent('a')
+      synopsis = anchor.data('synopsis') || ''
+      html = "<b>#{anchor.data 'node'}</b><br>#{wiki.resolveLinks synopsis}"
       $item.find('.caption').html(html)
 
   rebind()
