@@ -81,6 +81,12 @@ render = ({graph, placed, height}) ->
   line = (params) ->
     elem 'line', params, {'stroke-width':6, stroke:'#ccc'}, ->
 
+  path = ({x1, y1, x2, y2}) ->
+    qx = (x1+x2)/2 + Math.abs(y2-y1)/2
+    qy = (y1+y2)/2
+    d = "M#{x1} #{y1} Q#{qx} #{qy} #{x2} #{y2}"
+    elem 'path', {d}, {'stroke-width':6, stroke:'#ccc', fill:'transparent'}, ->
+
   text = (params, text) ->
     elem 'text', params, {'text-anchor':'middle', dy:6}, ->
       markup.push text.split(' ')[0]
@@ -99,8 +105,11 @@ render = ({graph, placed, height}) ->
 
     for node, [x1, y1] of placed
       for child in graph[node]||[]
-        [x2, y2] = placed[child] 
-        line {x1, y1, x2, y2}
+        [x2, y2] = placed[child]
+        if y2 >= y1
+          line {x1, y1, x2, y2}
+        else
+          path {x1, y1, x2, y2}
 
     for node, [x, y] of placed
       href = "http:/#{wiki.asSlug node}.html"
