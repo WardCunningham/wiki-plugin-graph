@@ -176,16 +176,13 @@ bind = ($item, item) ->
       whenNotGotten: -> console.error "Graph drop: Can't parse '#{url}'"
       whenGotten: (pageObject) ->
         title = pageObject.getTitle()
-        item.text = if site != location.host
-          item.text + "\n#{title}"
+        h = $('.page').index($item.parents('.page'))
+        t = $('.page').index($(".page##{slug}"))
+        item.text = if t < h
+          "#{title} --> HERE\n" + item.text
         else
-          h = $('.page').index($item.parents('.page'))
-          t = $('.page').index($(".page##{slug}"))
-          if t < h
-            "#{title} --> HERE\n" + item.text
-          else
-            item.text + "\nHERE --> #{title}"
-        update()
+          item.text + "\nHERE --> #{title}"
+        update(site)
 
   rebind = ->
     colorcode here, $item
@@ -206,15 +203,17 @@ bind = ($item, item) ->
   rebind()
 
 
-  update = ->
+  update = (site) ->
     $item.empty()
     emit($item, item)
     rebind()
-    wiki.pageHandler.put $item.parents('.page:first'),
+    action =
       type: 'edit',
       id: item.id,
       item: item
-
+    if site != location.host
+      action.site = site
+    wiki.pageHandler.put $item.parents('.page:first'),action
 
 
 window.plugins.graph = {emit, bind} if window?
