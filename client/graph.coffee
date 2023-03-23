@@ -150,7 +150,7 @@ bind = ($item, item) ->
 
   here = $item.parents('.page').find('h1').text().trim()
 
-  $item.dblclick -> wiki.textEditor $item, item
+  $item.on 'dblclick', () -> wiki.textEditor $item, item
 
   unless bound
     bound = true
@@ -187,7 +187,7 @@ bind = ($item, item) ->
   rebind = ->
     colorcode here, $item
 
-    $item.find('a').click (e) ->
+    $item.find('a').on 'click', (e) ->
       e.preventDefault()
       e.stopPropagation()
       node = $(e.target).parent('a').data('node')
