@@ -32,8 +32,5 @@
   },
   "bugs": {
     "url": "https://github.com/wardcunningham/wiki-plugin-graph/issues"
-  },
-  "engines": {
-    "node": ">0.10"
   }
 }
